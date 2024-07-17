@@ -14,6 +14,7 @@ protected:
   friend class Transcription;
   friend class OdeApprox;
   casadi::Slice all;
+  // 定义了两个CasADi函数, 用于表示系统的动态和雅可比矩阵
   casadi::Function f_;
   casadi::Function jac_f_;
   ode() = default;

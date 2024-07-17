@@ -9,9 +9,12 @@ namespace mropt::StateSpace {
 class SE2 : public State {
 private:
   casadi::Slice all{};
+  // 可能存储权重
   double w_x = 0.0;
   double w_y = 0.0;
   double w_o = 0.0;
+
+  // 分别存储xyo状态分量的标准差
   double x_std = 0.0;
   double y_std = 0.0;
   double o_std = 0.0;
@@ -22,6 +25,7 @@ public:
   SE2() : State() { nx_ = 3; }
 
   int nx() override { return nx_; }
+  // all 表示选取所有列, 是CasADi中的关键字
   casadi::MX x() { return X_(0, all); };
   casadi::MX y() { return X_(1, all); };
   casadi::MX o() { return X_(2, all); };
@@ -47,6 +51,7 @@ public:
     x_std = vars_std[(int) POS::x];
     y_std = vars_std[(int) POS::y];
     o_std = vars_std[(int) POS::o];
+    // 返回对当前对象的引用
     return *this;
   }
 

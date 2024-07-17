@@ -12,7 +12,9 @@ using namespace casadi;
 namespace mropt::collisions {
 class Collisions {
 protected:
+  // 表示函数
   casadi::Function f_;
+  // 表示该函数的雅可比矩阵
   casadi::Function jac_f_;
 
 public:

@@ -9,22 +9,33 @@ namespace mropt::Problem{ class Robot;}
 namespace mropt::StateSpace {
 class State {
 protected:
+  // 友元类
   friend class mropt::Problem::Robot;
+  // 状态变量的数量
   int nx_{0};
+  // 时间步数
   int Nx_{0};
+  // 存储状态变量的CasADi矩阵
   casadi::MX X_;
+  // 状态变量的下边界和上边界
   std::vector<double> lb_, ub_;
 
   std::list<casadi::MX> get_constraints();
 public:
+  // 枚举类型, 表示状态变量的位置
   enum class POS { x = 0, y = 1, o = 2 };
   casadi::Slice all;
+
+  // casadi::Slice 是CasADi库中用于表示矩阵或者向量中连续子区间的类
   casadi::Slice xy_slice;
+  // 内部结构体, 表示状态的三个分量
   struct state {
     double x, y, o;
   };
-
+  // 在state初始化时, 初始化了一个切片, 这个切片用于后续访问和操作状态变量中的特定分量
   State() { xy_slice = casadi::Slice((int) POS::x, (int) POS::y + 1); }
+
+  // 接收一个右值引用参数, 使用std::move 实现资源的转移
   void setX(casadi::MX &&X) {
     int _nx = X.size1();
     Nx_ = X.size2();

@@ -9,15 +9,19 @@
 namespace mropt::Dynamics::CarLike {
 class DiffDrive : public ode {
 private:
+  // 表示差分驱动机器人的轮距
   double L_;
 protected:
   DiffDrive() : ode() {}
 public:
+
+  //调用了ode的默认构造函数
   DiffDrive(const std::shared_ptr<mropt::ControlSpace::VW> &vw,
             const std::shared_ptr<mropt::StateSpace::SE2> &se2,
             const std::shared_ptr<mropt::RobotShape::CircleRobot> &cr)
       : ode(vw, se2, cr), L_(cr->getL()) {
     //Model
+    // SX::vertcat是一个静态成员函数, 用于垂直连接多个符号表达式, 形成一个符号向量
     SX X_dot = SX::vertcat(
         {vw->v_ode * cos(se2->o_ode),
          vw->v_ode * sin(se2->o_ode),

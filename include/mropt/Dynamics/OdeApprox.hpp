@@ -15,8 +15,10 @@ protected:
   //template <class shape_args> friend class mropt::Problem::BuilderDistributedRobot;
   Slice all;
   std::shared_ptr<ode> ode_;
+  // 分别定义了指向ode类的智能指针
   std::shared_ptr<MX> X0_;
   std::shared_ptr<MX> U0_;
+  // 定义了一个函数指针向量, 用于存储近似的动力学模型
   std::vector<Function *> fv_;
   TrustRegion trust_region_;
   //casadi::Opti& ocp;
@@ -33,7 +35,7 @@ public:
   void set_sym_trajectory0(const std::shared_ptr<MX> &X0, const std::shared_ptr<MX> &U0);
   virtual void generate_approximation() = 0;
   virtual void convexify(casadi::Opti &ocp, DM &x0, DM &u0) = 0;
-
+  // 初始化近似求解器
   void setup(Opti &ocp, std::shared_ptr<MX> X0, std::shared_ptr<MX> U0) {
     while (!fv_.empty()) {
       delete fv_.back();
@@ -54,7 +56,7 @@ public:
   int get_nu() const { return ode_->control_space_->nu(); }
   int get_N() const { return ode_->state_space_->Nx() - 1; }
   std::shared_ptr<ode> get_ode() const { return ode_; }
-
+  // 定义了一个虚析构函数,确保派生类的析构函数被正确调用 
   virtual ~OdeApprox();
   virtual std::shared_ptr<OdeApprox> clone(
       const std::shared_ptr<ode> &ode) const = 0;

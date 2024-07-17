@@ -13,6 +13,7 @@ casadi::MX Collisions::f(const casadi::MX &x_ode1, const casadi::MX &x_ode2) con
 }
 casadi::DM Collisions::f(const casadi::DM &x1, const  casadi::DM &x2) const
 {
+  // 调用预定义的f_函数,返回第一个计算结果
   const auto &result = f_(std::vector<casadi::DM>{{x1}, {x2}});
   return result[0];
 }
