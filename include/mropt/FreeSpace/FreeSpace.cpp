@@ -31,11 +31,14 @@ std::vector<MX> FreeSpace::get_constraints(std::vector<PolygonAssignment> pas)
 {
   double safe_radius = robot_shape->get_safety_radius();
   MX zero{0.0};
+  // 用于累积所有约束条件的总和
   MX g_sum{0.0};
   std::vector<MX> constraints{};
+  // 获得状态变量
   const auto &xy = ss.xy();
   for (const auto &pa : pas)
   {
+    // 获得多边形的信息
     auto &polygon = polygons[pa.pid];
     for(int k = pa.k0; k < pa.kf; ++k){
       auto g_p = mtimes(polygon.A, xy(all, k)) - polygon.b + safe_radius + threshold;

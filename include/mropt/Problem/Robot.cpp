@@ -320,6 +320,7 @@ void Robot::initial_guess(SingleMission &mission) {
 }
 
 void Robot::setupQuery(Opti &ocp) {
+  // 初始化模型代价
   J_model = 0.0;
   //Mission x0 and xf - bvp
   if (missions.empty())
@@ -327,6 +328,7 @@ void Robot::setupQuery(Opti &ocp) {
   mission_curr = std::make_shared<SingleMission>(missions.back());
   missions.pop_back();// Delete mission from queue
   // Set initial guess
+  // 为当前任务设置初始猜测
   initial_guess(*mission_curr);
 //  // Mission Constraints
 //  auto mission_constraints_list = mission_curr->get_constraints();
@@ -355,6 +357,7 @@ void Robot::setupQuery(Opti &ocp) {
   mu_free = ocp.parameter(1);
   mu_f_0 = mu_f_0_init;
   ocp.set_value(mu_free, mu_f_0_init);
+  // 更新模型代价
   J_model = J_model + cost->integrated_cost(dynamics->t0, dynamics->tf, dynamics->N) + mu_dynamics * sum_g_dynamics
       + mu_free * sum_g_free;
   J_model_nocol = J_model; //TODO: remove me

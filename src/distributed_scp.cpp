@@ -181,6 +181,7 @@ void init_cfree(std::vector<std::vector<std::vector<double>>> polygons){
     Slice all;
     for(auto &polygon : polygons){
         int Hp = polygon.size(); // amount of halfplanes in polygon
+        // A用于存储每个半平面的法向量系数
         MX A = MX(Hp, 2);
         MX b = MX(Hp, 1);
         for(int hp_id = 0; hp_id < Hp; ++hp_id){

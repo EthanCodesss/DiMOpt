@@ -2,26 +2,26 @@
 #define ROBOT_H
 #pragma once
 
-#include "../StateSpace/State.hpp"
 #include "../ControlSpace/Control.hpp"
 #include "../Cost/Cost.hpp"
 #include "../Dynamics/Transcription.hpp"
 #include "../FreeSpace/FreeSpace.hpp"
 #include "../RobotShape/Footprint.h"
+#include "../StateSpace/State.hpp"
 #include "SingleMission.hpp"
 
+#include "../util/integration.hpp"
 #include "casadi/casadi.hpp"
 #include <matplotlibcpp.h>
-#include "../util/integration.hpp"
 
 // Forward class declare
-namespace mropt::collisions{
- class CollisionsApprox;
- class CollisionsAugLagrangian;
- class DistributedCollisions;
- class FirstOrderTaylorDecoupledCollisions;
- class FirstOrderTaylorDistributedCollisions;
-}
+namespace mropt::collisions {
+class CollisionsApprox;
+class CollisionsAugLagrangian;
+class DistributedCollisions;
+class FirstOrderTaylorDecoupledCollisions;
+class FirstOrderTaylorDistributedCollisions;
+} // namespace mropt::collisions
 
 namespace plt = matplotlibcpp;
 
@@ -33,10 +33,12 @@ using std::chrono::milliseconds;
 namespace mropt::Problem {
 class Robot {
 public:
+  // 定义结构体，用于存储初始轨迹的控制输入和状态
   struct Trajectory0 {
     std::shared_ptr<MX> U0_;
     std::shared_ptr<MX> X0_;
   };
+  // 定义结构体， 用于存储机器人参数， 初始时间， 最终时间和时间步数
   struct Params {
     double t0;
     double tf;
@@ -54,18 +56,18 @@ public:
   Robot(const Robot &robot);
   Robot &operator=(const Robot &robot) = delete;
 
-  void setup(){
-      convexify_decoupled_collisions = nullptr;
-      this->mission_curr = nullptr;
-      this->fspace->setRobotShape(this->shape);
+  // 初始化机器人，设置自由空间的机器人形状
+  void setup() {
+    convexify_decoupled_collisions = nullptr;
+    this->mission_curr = nullptr;
+    this->fspace->setRobotShape(this->shape);
   }
   virtual ~Robot() = default;
 
   bool backtrack();
 
   void addMission(
-      const std::vector<double> &x_init,
-      const std::vector<double> &x_goal,
+      const std::vector<double> &x_init, const std::vector<double> &x_goal,
       const std::vector<mropt::freespace::FreeSpace::PolygonAssignment> &pas) {
     SingleMission mission(*ss);
     mission.init(x_init);
@@ -85,11 +87,9 @@ public:
     ocp.set_value(*(traj0.X0_), x0);
     dynamics->convexify(ocp, x0, u0);
   }
-  void get_solution(
-      std::vector<double> &x,
-      std::vector<double> &y,
-      std::vector<double> &o,
-      std::vector<std::vector<double>> &u) {
+  void get_solution(std::vector<double> &x, std::vector<double> &y,
+                    std::vector<double> &o,
+                    std::vector<std::vector<double>> &u) {
     x = x_sol;
     y = y_sol;
     o = o_sol;
@@ -98,7 +98,8 @@ public:
   Params p_;
 
 protected:
-    Robot(){}
+  Robot() {}
+
 protected:
   friend class CoupledProblem;
   friend class DecoupledProblem;
@@ -108,7 +109,6 @@ protected:
   friend class mropt::collisions::DistributedCollisions;
   friend class mropt::collisions::FirstOrderTaylorDecoupledCollisions;
   friend class mropt::collisions::FirstOrderTaylorDistributedCollisions;
-
 
   std::shared_ptr<mropt::ControlSpace::Control> cs;
   std::shared_ptr<mropt::StateSpace::State> ss;
@@ -154,7 +154,8 @@ protected:
   // Model Cost
   MX J_model{0.0}, J_model_nocol;
   DM true_cost{0.0}, prev_true_cost{0.0}, model_cost{0.0};
-  DM dynamics_violation{0.0}, free_space_violation{0.0}, collisions_violation{0.0};
+  DM dynamics_violation{0.0}, free_space_violation{0.0},
+      collisions_violation{0.0};
   // True Cost Function
   std::function<DM(const DM &X, const DM &U)> true_cost_;
   Slice all;
@@ -170,39 +171,34 @@ protected:
   std::vector<std::vector<double>> x_sol_i, y_sol_i, o_sol_i;
   void clear_plot_vars();
 
-  //Scp vars
+  // Scp vars
   double x_tol{1.0e-1};
   double g_tol{1.0e-2};
   double f_tol{1.0e-1};
   double k = 10;
   double pho0{0.0}; // reject and shrink
   double pho1{0.1}; // accept but shrink
-  //double pho2{0.75}; // accept and expand
+  // double pho2{0.75}; // accept and expand
   DM delta_f{10.0};
   DM delta_x{10.0};
   bool failed;
-  //Time vars
-  //duration<double, std::milli> ocp_create_time{0};
+  // Time vars
+  // duration<double, std::milli> ocp_create_time{0};
   duration<double, std::milli> ocp_query_time{0};
-  //Costs
-  //Violation checker
+  // Costs
+  // Violation checker
   DM prev_violation{-10};
   DM prev_violation_dynamics{-10};
   DM prev_violation_freespace{-10};
   DM prev_violation_collisions{-10};
-  //solution store
+  // solution store
   std::shared_ptr<OptiSol> solution;
-  //Scp help functions
+  // Scp help functions
   double compute_robot_costs_violations();
   bool handle_solution(double pho);
   bool viol_improv(double tol);
 
   double UniformNoise(double start, double end);
-
 };
-}
+} // namespace mropt::Problem
 #endif
-
-
-
-
