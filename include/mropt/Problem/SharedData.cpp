@@ -286,6 +286,7 @@ void SharedData::update_z_mu12(const mropt::collisions::Collisions &col,
     }
   }
   // Share z and mu
+  // OPENMPI中的广播函数, 用于将数据广播到所有进程中
   MPI_Bcast(z_x, size_z, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   MPI_Bcast(z_y, size_z, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   MPI_Bcast(mu_x, size_mu12, MPI_DOUBLE, 0, MPI_COMM_WORLD);

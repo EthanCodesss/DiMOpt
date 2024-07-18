@@ -37,6 +37,7 @@ public:
   static void add(std::list<Polygon> polys);
   static void clear_polygons();
   std::vector<MX> get_constraints(std::vector<PolygonAssignment> pas);
+
   casadi::DM J_real(const casadi::DM &x_r) {
     const auto &result = J_real_(std::vector<casadi::DM>{{x_r}});
     return result[0];
@@ -44,6 +45,7 @@ public:
 
   void setup(casadi::Opti &ocp) {}
   void setRobotShape(const std::shared_ptr<mropt::RobotShape::Footprint> &shape) { robot_shape = shape; }
+  // 使用了 explicit关键字, 编译器不会自动将单参数构造转换为多参数构造函数
   explicit FreeSpace(mropt::StateSpace::State &s) : ss(s) {}
   ~FreeSpace();
   static std::unordered_map<
@@ -52,6 +54,7 @@ public:
             boost::hash<std::pair<int, int>> > *poly_centers;
 private:
   friend class Robot;
+  // 在get_constraints 函数中同时赋值
   Function J_real_;
   Slice all;
   mropt::StateSpace::State &ss;

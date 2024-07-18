@@ -41,7 +41,9 @@ std::vector<MX> FreeSpace::get_constraints(std::vector<PolygonAssignment> pas)
     // 获得多边形的信息
     auto &polygon = polygons[pa.pid];
     for(int k = pa.k0; k < pa.kf; ++k){
+      // mtimes是符号计算, g_p存储符号计算结果, 这里的变量就是xy
       auto g_p = mtimes(polygon.A, xy(all, k)) - polygon.b + safe_radius + threshold;
+      // 将计算结果加入向量
       constraints.push_back( g_p );
       for (int g_id = 0; g_id < g_p.size1(); ++g_id)
       {
@@ -49,6 +51,7 @@ std::vector<MX> FreeSpace::get_constraints(std::vector<PolygonAssignment> pas)
       }
     }
   }
+  // 构成所有约束条件的累加和, 传入参数能够获得该累加和的值
   J_real_ = Function("J_real", {ss.X()}, {g_sum});
   return constraints;
 }

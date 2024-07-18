@@ -42,6 +42,7 @@ void SingleMission::set_problem(MX &J_model, Opti& ocp){
   // Init
   const auto X0 = ss.get_X_0();
   for( auto x_id = 0; x_id < x0.size(); ++ x_id){
+    // 为优化问题添加约束条件, 将优化问题中的初始状态变量等于给定的初始状态
     ocp.subject_to( X0(x_id)-x0[x_id]==0);
   }
 

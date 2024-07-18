@@ -3,6 +3,7 @@
 
 using namespace mropt::Problem;
 
+// 构建优化问题求解器
 void DecoupledProblem::reset_ocp() {
     // --- Problem and Solver Options
     p_opts["expand"] = true;
@@ -81,7 +82,7 @@ void DecoupledProblem::setup() {
     //Share trajectories between robots
     robot->data_shared->init_sync(robot);
     robot->collisions_d->setup(R, N, robot);
-
+    // cost function
     robot->J_model =
             robot->J_model +
             robot->collisions_d->get_augmented_lagrangian() +
@@ -182,6 +183,8 @@ DecoupledProblem &DecoupledProblem::debug_mode() {
 
 
 void DecoupledProblem::test() {
+
+    // 设置求解参数
     double delta_f_tol{1 * 10e-2};
     int feasible_iter{-1};
     bool found_first{false};
@@ -193,6 +196,9 @@ void DecoupledProblem::test() {
     double last_solve_time_r{0.0};
     int max_iter = 300;
     record_curr.iter_1 = max_iter;
+
+
+
     for (int i = 0; i < max_iter; i++) {
         // Set rho
         robot->ocp_->set_value(robot->rho, DM(*robot->data_shared->rho));
@@ -218,6 +224,7 @@ void DecoupledProblem::test() {
                                                                       {robot->x2param_list}})[0];
             return result;
         };
+        // MPI_COMM_WORLD 是 MPI中一个预定义的通信域
         MPI_Barrier(MPI_COMM_WORLD); //sync point
         double solve_time_r{0.0};
         solve_time_r -= MPI_Wtime();
@@ -228,6 +235,7 @@ void DecoupledProblem::test() {
         robot->scp_d();
 
         solve_time_r += MPI_Wtime();
+        // 等待每个机器人
         MPI_Barrier(MPI_COMM_WORLD); //sync point
         max_solve_time_r += MPI_Wtime();
         share_time_r -= MPI_Wtime();

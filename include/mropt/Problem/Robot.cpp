@@ -189,9 +189,12 @@ bool Robot::backtrack() {
 
 void Robot::resetQuery(Opti &ocp) {
   //Creating decision vars
+  // 设置控制变量和状态变量的设置器
   cs->setU(ocp.variable(cs->nu(), p_.N));
   ss->setX(ocp.variable(ss->nx(), p_.N + 1));
   //Current Trajectory Solution (iteration)
+
+  // 创建参数, 用于存储current trajectory solution
   traj0 = {
       std::make_shared<MX>(ocp.parameter(cs->nu(), cs->Nu())),
       std::make_shared<MX>(ocp.parameter(ss->nx(), ss->Nx()))};
@@ -207,6 +210,7 @@ void Robot::resetQuery(Opti &ocp) {
   // Trust region
   const auto &trustregion_constraints_list = dynamics->get_trust_region_constraints();
   for (auto &trustregion_constraint : trustregion_constraints_list) {
+    // 设置约束
     ocp.subject_to(trustregion_constraint <= 0);
   }
 
@@ -347,6 +351,7 @@ void Robot::setupQuery(Opti &ocp) {
     int dim_g_f = fspace_constraints_list[0].size1();
     MX slack_g_f_t = ocp.variable(dim_g_f, g_f_num);
     for (int g_id = 0; g_id < g_f_num; ++g_id) {
+      // 将得到的约束添加到ocp中
       ocp.subject_to(slack_g_f_t(all, g_id) >= 0);
       ocp.subject_to(fspace_constraints_list[g_id] - slack_g_f_t(all, g_id) <= 0);
     }

@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
     plotter->inputScenario(map_file); // TODO: remove me only for debug mode
 
     mropt::Problem::DecoupledProblem mrprob_d{r};
-    mrprob_d.setParams(R, N);
+    mrprob_d.setParams(R, ]=N);
     mrprob_d.addRobot(robot_d);
     mrprob_d.set_plotter(plotter);
     mrprob_d.debug_mode().allow_plotting();

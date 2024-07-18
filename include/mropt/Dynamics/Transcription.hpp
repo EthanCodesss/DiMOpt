@@ -10,6 +10,7 @@
 using namespace casadi;
 
 // Class Forward
+// 类的前向声明
 namespace mropt::Problem {class Robot;}
 namespace mropt::Problem {class CoupledProblem;}
 namespace mropt::Problem {class DecoupledProblem;}
@@ -18,26 +19,30 @@ namespace mropt::Problem {class DistributedRobot;}
 namespace mropt::Dynamics {
 class Transcription {
 protected:
+  // 友元类声明, 可以访问保护成员
   friend class mropt::Problem::CoupledProblem;
   friend class mropt::Problem::DecoupledProblem;
   friend class mropt::Problem::Robot;
   friend class mropt::Problem::DistributedRobot;
   Slice all;
   std::shared_ptr<OdeApprox> ode_approx_;
+  // CasADi 函数, 表示实际成本
   Function J_real_;
   Function J_max_;
   Function J_model_;
   std::shared_ptr<ode> ode_;
   int N{0};
   MX t0, tf;
+  // 积分器函数, 接受一个CasADi函数和三个MX参数
   std::function<MX(const Function &, const MX &, const MX &, const MX &)> integrator;
 
 public:
+  // 构造函数, 初始化成员变量
   explicit Transcription(const std::shared_ptr<OdeApprox> &ode)
       : ode_approx_(ode), ode_(ode->get_ode()), integrator(mropt::util::rk4) {
     //integrator = rk4;
   };
-
+  // 设置自定义积分器的方法
   Transcription &set_integrator(std::function<MX(const Function &, const MX &, const MX &, const MX &)> integr) {
     integrator = integr;
     return *this;
@@ -50,15 +55,18 @@ private:
       std::shared_ptr<MX> X0,
       std::shared_ptr<MX> U0,
       double t0_, double tf_, int N_) {
+    // 创建一个维度是1的参数
     t0 = ocp.parameter(1);
     tf = ocp.parameter(1);
     N = N_;
+    
     ocp.set_value(t0, t0_);
     ocp.set_value(tf, tf_);
     ode_approx_->setup(ocp, X0, U0);
     set_J_real();
   }
 
+  // 评估实际成本函数的方法
   casadi::DM J_real(const casadi::DM &x_r, const casadi::DM &u_r, const casadi::DM &p) {
     const auto &result = J_real_(std::vector<casadi::DM>{{x_r}, {u_r}, {p}});
     return result[0];

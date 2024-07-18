@@ -83,6 +83,7 @@ public:
   void plot();
   void initial_guess(SingleMission &mission);
   void convexify_dynamics(Opti &ocp, DM &x0, DM &u0) {
+    // 设置初始值
     ocp.set_value(*(traj0.U0_), u0);
     ocp.set_value(*(traj0.X0_), x0);
     dynamics->convexify(ocp, x0, u0);

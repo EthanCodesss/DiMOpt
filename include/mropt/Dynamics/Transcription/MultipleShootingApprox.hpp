@@ -16,15 +16,18 @@ public:
   ~MultipleShootingApprox() = default;
 
   std::vector<MX> get_constraints() override {
+    // 建立一个vector
     std::vector<MX> constraints{};
     MX g_sum{0.0};
     for (int k = 0; k < N; ++k) {
+      // 计算下一个状态
       const auto &x_next = ode_->state_space_->X()(all, k) +
           integrator(
               *(ode_approx_->fapprox(k)),
               (1 / (double) N) * tf,
               ode_->state_space_->X()(all, k),
               ode_->control_space_->U()(all, k));
+      // 计算累积误差
       g_sum = g_sum + sum1(MX::abs(ode_->state_space_->X()(all, k + 1) - x_next));
       constraints.push_back(ode_->state_space_->X()(all, k + 1) - x_next);
     }
