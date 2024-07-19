@@ -115,7 +115,8 @@ int main(int argc, char** argv) {
     plotter->setFootprint({L}, {W});
     plotter->addPathToScenarios(maps_path);
     plotter->inputScenario(map_file); // TODO: remove me only for debug mode
-
+    // 准备模块, 这部分应该对应 planning_manager
+    // Decoupled
     mropt::Problem::DecoupledProblem mrprob_d{r};
     mrprob_d.setParams(R, ]=N);
     mrprob_d.addRobot(robot_d);
